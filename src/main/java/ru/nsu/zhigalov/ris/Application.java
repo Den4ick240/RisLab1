@@ -7,9 +7,9 @@ import org.apache.commons.compress.utils.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
-import java.util.function.Function;
 
 public class Application {
     public static final Logger logger = LogManager.getLogger(Application.class);
@@ -68,8 +68,8 @@ public class Application {
 
     private static void countStat(String inputFilePath) {
         try (var input = new BZip2CompressorInputStream(new BufferedInputStream(new FileInputStream(inputFilePath)))) {
-            System.out.println(new StatCounter().countStat(input));
-        } catch (IOException | XMLStreamException e) {
+            System.out.println(new JaxbStatCounter().countStat(input));
+        } catch (IOException | XMLStreamException | JAXBException e) {
             e.printStackTrace();
         }
     }

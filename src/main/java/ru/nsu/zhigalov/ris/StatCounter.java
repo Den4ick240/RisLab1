@@ -1,5 +1,6 @@
 package ru.nsu.zhigalov.ris;
 
+import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -12,15 +13,19 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 public class StatCounter {
 
     private static final int USER_ATTRIBUTE = 4;
-    private Statistics statistics;
-    private XMLStreamReader reader;
+    protected Statistics statistics;
+    protected XMLStreamReader reader;
     private static final String NODE = "node";
     private static final String TAG = "tag";
 
-    public Statistics countStat(InputStream inputStream) throws XMLStreamException {
+    public static XMLStreamReader getReader(InputStream inputStream) throws XMLStreamException {
+        return XMLInputFactory.newInstance().createXMLStreamReader(inputStream);
+    }
+
+    public Statistics countStat(InputStream inputStream) throws XMLStreamException, JAXBException {
         statistics = new Statistics(new HashMap<>(), new HashMap<>());
 
-        reader = XMLInputFactory.newInstance().createXMLStreamReader(inputStream);
+        reader = getReader(inputStream);
         while (reader.hasNext()) {
             countEvent(reader.next());
         }
@@ -28,7 +33,7 @@ public class StatCounter {
         return statistics;
     }
 
-    private void countEvent(int eventType) throws XMLStreamException {
+    protected void countEvent(int eventType) throws XMLStreamException, JAXBException {
         if (eventType != START_ELEMENT) return;
 
         String localName = reader.getLocalName();
@@ -36,7 +41,7 @@ public class StatCounter {
         countNode();
     }
 
-    private void countNode() throws XMLStreamException {
+    protected void countNode() throws XMLStreamException, JAXBException {
         String username = reader.getAttributeValue("", "user");
         String changeset = reader.getAttributeValue("", "changeset");
         statistics.addUserEdit(username, changeset);
@@ -52,7 +57,7 @@ public class StatCounter {
         }
     }
 
-    private void countTag() {
+    protected void countTag() {
         String k = reader.getAttributeValue("", "k");
         statistics.addKeyNodeAmount(k);
     }
