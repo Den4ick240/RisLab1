@@ -54,16 +54,7 @@ public class Application {
                 extractBytesFromBz2ToXml(inputPath, outputPath, length);
 
             if (calculateStat)
-                try (var databaseController = new DatabaseController(SCRIPT_NAMES)) {
-                    databaseController.cleanDatabase();
-                    databaseController.createDatabase();
-                    Connection connection = databaseController.getConnection();
-                    Dao<Node> stringNodeDao = new StringNodeDao(connection, new StringTagDao(connection));
-                    Dao<Node> preparedNodeDao = new PreparedNodeDao(connection, new PreparedTagDao(connection));
-                    countStat(inputPath, preparedNodeDao, length);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                testCalculateStat(inputPath, length);
         } catch (ParseException e) {
             System.out.println("Error parsing command line arguments: ");
             System.out.println(e.getMessage());
@@ -81,11 +72,47 @@ public class Application {
         }
     }
 
-    private static void countStat(String inputFilePath, Dao<Node> nodeDao, long length) {
+    private static void testCalculateStat(String inputPath, Long length) {
+        try (var databaseController = new DatabaseController(SCRIPT_NAMES)) {
+            Connection connection = databaseController.getConnection();
+
+            Dao<Node> stringNodeDao = new StringNodeDao(connection, new StringTagDao(connection));
+            Dao<Node> preparedNodeDao = new PreparedNodeDao(connection, new PreparedTagDao(connection));
+
+            TestSubject[] testSubjects = new TestSubject[]{
+                    new TestSubject("New statement every time", stringNodeDao),
+                    new TestSubject("Prepared statement", preparedNodeDao)
+            };
+
+            String separator = "--------------------------------";
+            for (var testSubject : testSubjects) {
+                databaseController.cleanDatabase();
+                databaseController.createDatabase();
+                var startTime = System.currentTimeMillis();
+                var countingDao = new CountingNodeDao(testSubject.dao);
+                var stat = countStat(inputPath, countingDao, length);
+                testSubject.finalizer.run();
+                var time = System.currentTimeMillis() - startTime;
+                String result = String.format(
+                        "\nStrategy: %s\nMilliseconds: %d\nWrites per second: %f\n",
+                        testSubject.name, time, countingDao.getCounter() / (((float) time) / 1000)
+                );
+                System.out.println(separator);
+                System.out.println(result);
+                logger.info(stat);
+            }
+            System.out.println(separator);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static Statistics countStat(String inputFilePath, Dao<Node> nodeDao, long length) {
         try (var input = new BZip2CompressorInputStream(new BufferedInputStream(new FileInputStream(inputFilePath)))) {
-            System.out.println(new JaxbStatCounter(nodeDao).countStat(input, length));
+            return new JaxbStatCounter(nodeDao).countStat(input, length);
         } catch (IOException | XMLStreamException | JAXBException | SQLException e) {
             e.printStackTrace();
+            return null;
         }
     }
 }
