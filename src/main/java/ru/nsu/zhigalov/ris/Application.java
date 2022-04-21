@@ -76,12 +76,24 @@ public class Application {
         try (var databaseController = new DatabaseController(SCRIPT_NAMES)) {
             Connection connection = databaseController.getConnection();
 
+            var batch = connection.createStatement();
+            Runnable executeBatch = () -> {
+                try {
+                    batch.executeBatch();
+                    connection.commit();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            };
+
             Dao<Node> stringNodeDao = new StringNodeDao(connection, new StringTagDao(connection));
             Dao<Node> preparedNodeDao = new PreparedNodeDao(connection, new PreparedTagDao(connection));
+            Dao<Node> batchNodeDao = new BatchNodeDao(batch, new BatchTagDao(batch));
 
             TestSubject[] testSubjects = new TestSubject[]{
                     new TestSubject("New statement every time", stringNodeDao),
-                    new TestSubject("Prepared statement", preparedNodeDao)
+                    new TestSubject("Prepared statement", preparedNodeDao),
+                    new TestSubject("Batch statement", batchNodeDao, executeBatch)
             };
 
             String separator = "--------------------------------";
