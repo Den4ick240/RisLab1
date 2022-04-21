@@ -1,5 +1,7 @@
 package ru.nsu.zhigalov.ris;
 
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
+
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
@@ -23,11 +25,11 @@ public class StatCounter {
         return XMLInputFactory.newInstance().createXMLStreamReader(inputStream);
     }
 
-    public Statistics countStat(InputStream inputStream) throws XMLStreamException, JAXBException, SQLException {
+    public Statistics countStat(BZip2CompressorInputStream inputStream, long length) throws XMLStreamException, JAXBException, SQLException {
         statistics = new Statistics(new HashMap<>(), new HashMap<>());
 
         reader = getReader(inputStream);
-        while (reader.hasNext()) {
+        while (reader.hasNext() && inputStream.getBytesRead() < length) {
             countEvent(reader.next());
         }
 

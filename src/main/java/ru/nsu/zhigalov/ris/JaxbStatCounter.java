@@ -1,6 +1,7 @@
 package ru.nsu.zhigalov.ris;
 
 import generated.Node;
+import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import ru.nsu.zhigalov.ris.db.Dao;
 
 import javax.xml.bind.JAXBContext;
@@ -19,11 +20,11 @@ public class JaxbStatCounter extends StatCounter {
     }
 
     @Override
-    public Statistics countStat(InputStream inputStream) throws XMLStreamException, JAXBException, SQLException {
+    public Statistics countStat(BZip2CompressorInputStream inputStream, long length) throws XMLStreamException, JAXBException, SQLException {
         reader = getReader(inputStream);
         JAXBContext jaxbContext = JAXBContext.newInstance(Node.class);
         unmarshaller = jaxbContext.createUnmarshaller();
-        return super.countStat(inputStream);
+        return super.countStat(inputStream, length);
     }
 
     @Override

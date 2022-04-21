@@ -7,14 +7,12 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import ru.nsu.zhigalov.ris.db.Dao;
-import ru.nsu.zhigalov.ris.db.DatabaseController;
-import ru.nsu.zhigalov.ris.db.StringNodeDao;
-import ru.nsu.zhigalov.ris.db.StringTagDao;
+import ru.nsu.zhigalov.ris.db.*;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 public class Application {
@@ -25,7 +23,6 @@ public class Application {
     static final String STAT_OPTION = "s";
     static final String LENGTH_OPTION = "l";
     static final String[] SCRIPT_NAMES = {"nodes", "tags"};
-
 
 
     public static void main(String[] args) {
@@ -56,14 +53,17 @@ public class Application {
             if (outputPath != null)
                 extractBytesFromBz2ToXml(inputPath, outputPath, length);
 
-            try (var databaseController = new DatabaseController(SCRIPT_NAMES)) {
-                databaseController.cleanDatabase();
-                databaseController.createDatabase();
-                if (calculateStat)
-                    countStat(inputPath, new StringNodeDao(databaseController.getConnection(), new StringTagDao(databaseController.getConnection())));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            if (calculateStat)
+                try (var databaseController = new DatabaseController(SCRIPT_NAMES)) {
+                    databaseController.cleanDatabase();
+                    databaseController.createDatabase();
+                    Connection connection = databaseController.getConnection();
+                    Dao<Node> stringNodeDao = new StringNodeDao(connection, new StringTagDao(connection));
+                    Dao<Node> preparedNodeDao = new PreparedNodeDao(connection, new PreparedTagDao(connection));
+                    countStat(inputPath, preparedNodeDao, length);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
         } catch (ParseException e) {
             System.out.println("Error parsing command line arguments: ");
             System.out.println(e.getMessage());
@@ -81,9 +81,9 @@ public class Application {
         }
     }
 
-    private static void countStat(String inputFilePath, Dao<Node> nodeDao) {
+    private static void countStat(String inputFilePath, Dao<Node> nodeDao, long length) {
         try (var input = new BZip2CompressorInputStream(new BufferedInputStream(new FileInputStream(inputFilePath)))) {
-            System.out.println(new JaxbStatCounter(nodeDao).countStat(input));
+            System.out.println(new JaxbStatCounter(nodeDao).countStat(input, length));
         } catch (IOException | XMLStreamException | JAXBException | SQLException e) {
             e.printStackTrace();
         }
