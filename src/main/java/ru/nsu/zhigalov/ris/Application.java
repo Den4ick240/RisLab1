@@ -6,10 +6,12 @@ import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.nsu.zhigalov.ris.db.DatabaseController;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
 import java.io.*;
+import java.sql.SQLException;
 
 public class Application {
     public static final Logger logger = LogManager.getLogger(Application.class);
@@ -18,6 +20,8 @@ public class Application {
     static final String OUTPUT_OPTION = "h";
     static final String STAT_OPTION = "s";
     static final String LENGTH_OPTION = "l";
+    static final String[] SCRIPT_NAMES = {"nodes", "tags"};
+
 
 
     public static void main(String[] args) {
@@ -48,7 +52,14 @@ public class Application {
             if (outputPath != null)
                 extractBytesFromBz2ToXml(inputPath, outputPath, length);
 
-            if (calculateStat) countStat(inputPath);
+            try (var databaseController = new DatabaseController(SCRIPT_NAMES)) {
+                databaseController.cleanDatabase();
+                databaseController.createDatabase();
+                if (calculateStat)
+                    countStat(inputPath);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } catch (ParseException e) {
             System.out.println("Error parsing command line arguments: ");
             System.out.println(e.getMessage());
