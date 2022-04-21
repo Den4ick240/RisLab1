@@ -27,13 +27,7 @@ dependencies {
     implementation group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.17.1'
     implementation 'org.apache.commons:commons-compress:1.21'
     implementation 'commons-cli:commons-cli:1.5.0'
-//    implementation 'javax.xml.bind:jaxb-api:2.3.1'
-//    implementation 'org.glassfish.jaxb:jaxb-runtime:3.0.2'
-//    implementation 'com.sun.xml.bind:jaxb-impl:3.0.2'
-//    implementation 'com.sun.xml.bind:jaxb-core:3.0.2'
-//    implementation 'javax.activation:activation:1.1'
-//    implementation "jakarta.xml.bind:jakarta.xml.bind-api:2.3.2"
-//    implementation('javax.xml.bind:jaxb-api:2.4.0-b180830.0359')
+    implementation 'org.postgresql:postgresql:42.3.3'
 
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
@@ -42,18 +36,3 @@ dependencies {
 test {
     useJUnitPlatform()
 }
-//
-//def addXjcTask(taskName, schema, pkg, dest) {
-//    file(dest).mkdirs()
-//    tasks.create(name: taskName, type: JavaExec) {
-//        classpath configurations.jaxb
-//        main 'com.sun.tools.xjc.XJCFacade'
-//        args schema, "-p", pkg, "-d", dest
-//    }
-//    compileGeneratedJava.dependsOn tasks.getByName(taskName)
-//}
-//
-//addXjcTask("xjcSchema1",
-//        "src/main/java/schema/OSMSchema.xsd",
-//        'ru.nsu.zhigalov.ris.entity.generated',
-//        "src/main/java")
