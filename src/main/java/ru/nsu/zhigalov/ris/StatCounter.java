@@ -5,6 +5,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import java.io.InputStream;
+import java.sql.SQLException;
 import java.util.HashMap;
 
 import static javax.xml.stream.XMLStreamConstants.END_ELEMENT;
@@ -22,7 +23,7 @@ public class StatCounter {
         return XMLInputFactory.newInstance().createXMLStreamReader(inputStream);
     }
 
-    public Statistics countStat(InputStream inputStream) throws XMLStreamException, JAXBException {
+    public Statistics countStat(InputStream inputStream) throws XMLStreamException, JAXBException, SQLException {
         statistics = new Statistics(new HashMap<>(), new HashMap<>());
 
         reader = getReader(inputStream);
@@ -33,7 +34,7 @@ public class StatCounter {
         return statistics;
     }
 
-    protected void countEvent(int eventType) throws XMLStreamException, JAXBException {
+    protected void countEvent(int eventType) throws XMLStreamException, JAXBException, SQLException {
         if (eventType != START_ELEMENT) return;
 
         String localName = reader.getLocalName();
@@ -41,7 +42,7 @@ public class StatCounter {
         countNode();
     }
 
-    protected void countNode() throws XMLStreamException, JAXBException {
+    protected void countNode() throws XMLStreamException, JAXBException, SQLException {
         String username = reader.getAttributeValue("", "user");
         String changeset = reader.getAttributeValue("", "changeset");
         statistics.addUserEdit(username, changeset);

@@ -1,17 +1,12 @@
 package ru.nsu.zhigalov.ris.db;
 
-import org.postgresql.util.PSQLException;
 import ru.nsu.zhigalov.ris.Utils;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 public class DatabaseController implements AutoCloseable {
     private static final String CLEAN_POSTFIX = "_clean.sql";
@@ -71,5 +66,9 @@ public class DatabaseController implements AutoCloseable {
     @Override
     public void close() throws Exception {
         connection.close();
+    }
+
+    public Connection getConnection() {
+        return connection;
     }
 }

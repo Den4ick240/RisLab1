@@ -1,12 +1,16 @@
 package ru.nsu.zhigalov.ris;
 
 
+import generated.Node;
 import org.apache.commons.cli.*;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.apache.commons.compress.utils.IOUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import ru.nsu.zhigalov.ris.db.Dao;
 import ru.nsu.zhigalov.ris.db.DatabaseController;
+import ru.nsu.zhigalov.ris.db.StringNodeDao;
+import ru.nsu.zhigalov.ris.db.StringTagDao;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
@@ -56,7 +60,7 @@ public class Application {
                 databaseController.cleanDatabase();
                 databaseController.createDatabase();
                 if (calculateStat)
-                    countStat(inputPath);
+                    countStat(inputPath, new StringNodeDao(databaseController.getConnection(), new StringTagDao(databaseController.getConnection())));
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -77,10 +81,10 @@ public class Application {
         }
     }
 
-    private static void countStat(String inputFilePath) {
+    private static void countStat(String inputFilePath, Dao<Node> nodeDao) {
         try (var input = new BZip2CompressorInputStream(new BufferedInputStream(new FileInputStream(inputFilePath)))) {
-            System.out.println(new JaxbStatCounter().countStat(input));
-        } catch (IOException | XMLStreamException | JAXBException e) {
+            System.out.println(new JaxbStatCounter(nodeDao).countStat(input));
+        } catch (IOException | XMLStreamException | JAXBException | SQLException e) {
             e.printStackTrace();
         }
     }
