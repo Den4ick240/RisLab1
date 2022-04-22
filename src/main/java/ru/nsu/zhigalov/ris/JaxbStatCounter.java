@@ -20,7 +20,7 @@ public class JaxbStatCounter extends StatCounter {
     }
 
     @Override
-    public Statistics countStat(BZip2CompressorInputStream inputStream, long length) throws XMLStreamException, JAXBException, SQLException {
+    public Statistics countStat(BZip2CompressorInputStream inputStream, Long length) throws XMLStreamException, JAXBException, SQLException {
         reader = getReader(inputStream);
         JAXBContext jaxbContext = JAXBContext.newInstance(Node.class);
         unmarshaller = jaxbContext.createUnmarshaller();

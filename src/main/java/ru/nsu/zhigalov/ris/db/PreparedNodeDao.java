@@ -4,21 +4,19 @@ import generated.Node;
 
 import java.sql.*;
 
-public class PreparedNodeDao extends AbstractNestedNodeDao {
+public class PreparedNodeDao extends CommittingDao<Node> {
     private static final String preparedSqlString =
             "insert into nodes (id, lat, lon, usr, uid, visible, version, changeset, timestamp) " +
                     "values (?, ?, ?, ?, ?, ?, ?, ?, ?)";
     private final PreparedStatement preparedStatement;
-    private final Connection connection;
 
-    public PreparedNodeDao(Connection connection, Dao<TagEntity> tagEntityDao) throws SQLException {
-        super(tagEntityDao);
-        this.connection = connection;
+    public PreparedNodeDao(Connection connection) throws SQLException {
+        super(connection);
         preparedStatement = connection.prepareStatement(preparedSqlString);
     }
 
     @Override
-    protected void insertNode(Node node) throws SQLException {
+    public void insert(Node node) throws SQLException {
         preparedStatement.setInt(1, node.getId().intValue());
         preparedStatement.setDouble(2, node.getLat());
         preparedStatement.setDouble(3, node.getLon());
@@ -29,6 +27,5 @@ public class PreparedNodeDao extends AbstractNestedNodeDao {
         preparedStatement.setInt(8, node.getChangeset().intValue());
         preparedStatement.setTimestamp(9, Timestamp.from(node.getTimestamp().toGregorianCalendar().toInstant()));
         preparedStatement.execute();
-        connection.commit();
     }
 }

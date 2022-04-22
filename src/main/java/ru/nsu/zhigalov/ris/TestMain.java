@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamException;
 import java.io.*;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Map;
 
 public class TestMain {
     public static final Logger logger = LogManager.getLogger(TestMain.class);
@@ -22,6 +23,7 @@ public class TestMain {
     static final String STAT_OPTION = "s";
     static final String LENGTH_OPTION = "l";
     static final String[] SCRIPT_NAMES = {"nodes", "tags", "extensions"};
+    static final int batchSize = 50000;
 
 
     public static void main(String[] args) {
@@ -33,11 +35,11 @@ public class TestMain {
             CommandLine cmd = parseCommandLine(args);
             String inputPath = cmd.getOptionValue(INPUT_OPTION);
             String outputPath = cmd.getOptionValue(OUTPUT_OPTION);
-            long length = ((Number) cmd.getParsedOptionValue(LENGTH_OPTION)).longValue();
+            Long length = cmd.hasOption(LENGTH_OPTION) ? (((Number) cmd.getParsedOptionValue(LENGTH_OPTION)).longValue()) : null;
             boolean calculateStat = cmd.hasOption(STAT_OPTION);
             logger.info(String.format("Cmd arguments: x: %s, h: %s, l:%d, s:%b", inputPath, outputPath, length, calculateStat));
 
-            if (outputPath != null)
+            if (outputPath != null && length != null)
                 extractBytesFromBz2ToXml(inputPath, outputPath, length);
 
             if (calculateStat)
@@ -91,33 +93,44 @@ public class TestMain {
                     e.printStackTrace();
                 }
             };
+            Runnable commit = () -> {
+                try {
+                    connection.commit();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            };
 
-            Dao<Node> stringNodeDao = new StringNodeDao(connection, new StringTagDao(connection));
-            Dao<Node> preparedNodeDao = new PreparedNodeDao(connection, new PreparedTagDao(connection));
-            Dao<Node> batchNodeDao = new BatchNodeDao(batch, new BatchTagDao(batch));
+            Dao<Node> stringNodeDao = new NestedNodeDao(new StringNodeDao(connection), new StringTagDao(connection));
+//                    new StringNodeDao(connection, new StringTagDao(connection), commit);
+            Dao<Node> preparedNodeDao = new NestedNodeDao(new PreparedNodeDao(connection), new PreparedTagDao(connection));
+//                    new PreparedNodeDao(connection, new PreparedTagDao(connection), commit);
+            Dao<Node> batchNodeDao = new NestedNodeDao(new BatchNodeDao(connection, batchSize, batch), new BatchTagDao(connection, batchSize, batch));
+//                    new BatchNodeDao(batch, new BatchTagDao(batch));
 
             TestSubject[] testSubjects = new TestSubject[]{
                     new TestSubject("New statement every time", stringNodeDao),
                     new TestSubject("Prepared statement", preparedNodeDao),
-                    new TestSubject("Batch statement", batchNodeDao, executeBatch)
+                    new TestSubject("Batch statement", batchNodeDao)
             };
 
             String separator = "--------------------------------";
             for (var testSubject : testSubjects) {
                 databaseController.cleanDatabase();
                 databaseController.createDatabase();
-                var startTime = System.currentTimeMillis();
                 var countingDao = new CountingNodeDao(testSubject.dao);
                 var stat = countStat(inputPath, countingDao, length);
-                testSubject.finalizer.run();
-                var time = System.currentTimeMillis() - startTime;
+//                var startTime = System.currentTimeMillis();
+                countingDao.commit();
+//                var time = System.currentTimeMillis() - startTime + countingDao.getTimeMillis();
+                var time = countingDao.getTimeMillis();
                 String result = String.format(
                         "\nStrategy: %s\nMilliseconds: %d\nWrites per second: %f\n",
                         testSubject.name, time, countingDao.getCounter() / (((float) time) / 1000)
                 );
                 System.out.println(separator);
                 System.out.println(result);
-                logger.info(stat);
+//                logger.info(stat);
             }
             System.out.println(separator);
         } catch (Exception e) {
@@ -125,7 +138,7 @@ public class TestMain {
         }
     }
 
-    private static Statistics countStat(String inputFilePath, Dao<Node> nodeDao, long length) {
+    private static Statistics countStat(String inputFilePath, Dao<Node> nodeDao, Long length) {
         try (var input = new BZip2CompressorInputStream(new BufferedInputStream(new FileInputStream(inputFilePath)))) {
             return new JaxbStatCounter(nodeDao).countStat(input, length);
         } catch (IOException | XMLStreamException | JAXBException | SQLException e) {

@@ -4,4 +4,5 @@ import java.sql.SQLException;
 
 public interface Dao<T> {
     void insert(T obj) throws SQLException;
+    void commit() throws SQLException;
 }

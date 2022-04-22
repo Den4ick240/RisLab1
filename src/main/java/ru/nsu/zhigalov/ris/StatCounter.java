@@ -15,7 +15,6 @@ import static javax.xml.stream.XMLStreamConstants.START_ELEMENT;
 
 public class StatCounter {
 
-    private static final int USER_ATTRIBUTE = 4;
     protected Statistics statistics;
     protected XMLStreamReader reader;
     private static final String NODE = "node";
@@ -25,11 +24,11 @@ public class StatCounter {
         return XMLInputFactory.newInstance().createXMLStreamReader(inputStream);
     }
 
-    public Statistics countStat(BZip2CompressorInputStream inputStream, long length) throws XMLStreamException, JAXBException, SQLException {
+    public Statistics countStat(BZip2CompressorInputStream inputStream, Long length) throws XMLStreamException, JAXBException, SQLException {
         statistics = new Statistics(new HashMap<>(), new HashMap<>());
 
         reader = getReader(inputStream);
-        while (reader.hasNext() && inputStream.getBytesRead() < length) {
+        while (reader.hasNext() && (length == null || inputStream.getBytesRead() < length)) {
             countEvent(reader.next());
         }
 

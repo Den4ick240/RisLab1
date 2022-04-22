@@ -5,7 +5,7 @@ import generated.Node;
 import java.sql.SQLException;
 
 public abstract class AbstractNestedNodeDao implements Dao<Node>{
-    protected final Dao<TagEntity> tagEntityDao;
+    private final Dao<TagEntity> tagEntityDao;
 
     protected AbstractNestedNodeDao(Dao<TagEntity> tagEntityDao) {
         this.tagEntityDao = tagEntityDao;
@@ -15,6 +15,7 @@ public abstract class AbstractNestedNodeDao implements Dao<Node>{
 
     @Override
     public void insert(Node obj) throws SQLException {
+
         insertNode(obj);
         for (var tag : obj.getTag())
             tagEntityDao.insert(new TagEntity(obj.getId(), tag.getK(), tag.getV()));
