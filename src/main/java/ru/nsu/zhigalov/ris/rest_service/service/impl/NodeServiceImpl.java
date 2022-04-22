@@ -20,4 +20,24 @@ public class NodeServiceImpl implements NodeService {
     public List<Node> findNodesInArea(Area area) {
         return nodeRepository.findNodesInRangeOrderByDistanceAsc(area.getLat(), area.getLon(), area.getRad());
     }
+
+    @Override
+    public List<Node> getAllNodes() {
+        return null;
+    }
+
+    @Override
+    public Node findNodeById(Long id) {
+        return null;
+    }
+
+    @Override
+    public void deleteNodeById(Long id) {
+
+    }
+
+    @Override
+    public void putNode(Node node) {
+
+    }
 }

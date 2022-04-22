@@ -6,7 +6,7 @@ import java.sql.Timestamp;
 
 public class NodeSqlString {
     public static final String formatString = "insert into nodes (id, lat, lon, usr, uid, visible, version, changeset, timestamp) values " +
-            "(%s, %s, %s, '%s', %s, %b, %s, %s, timestamp '%s')";
+            "(%s, %f, %f, '%s', %s, %b, %s, %s, timestamp '%s')";
 
     public static String format(Node node) {
         return String.format(formatString,
