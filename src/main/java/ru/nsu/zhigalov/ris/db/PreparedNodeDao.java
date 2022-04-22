@@ -24,7 +24,6 @@ public class PreparedNodeDao extends AbstractNestedNodeDao {
         preparedStatement.setDouble(3, node.getLon());
         preparedStatement.setString(4, node.getUser());
         preparedStatement.setInt(5, node.getUid().intValue());
-//        preparedStatement.setBoolean(6, node.isVisible());
         preparedStatement.setObject(6, node.isVisible(), Types.BOOLEAN);
         preparedStatement.setInt(7, node.getVersion().intValue());
         preparedStatement.setInt(8, node.getChangeset().intValue());

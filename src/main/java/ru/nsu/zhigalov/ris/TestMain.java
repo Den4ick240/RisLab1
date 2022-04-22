@@ -21,7 +21,7 @@ public class TestMain {
     static final String OUTPUT_OPTION = "h";
     static final String STAT_OPTION = "s";
     static final String LENGTH_OPTION = "l";
-    static final String[] SCRIPT_NAMES = {"nodes", "tags"};
+    static final String[] SCRIPT_NAMES = {"nodes", "tags", "extensions"};
 
 
     public static void main(String[] args) {
