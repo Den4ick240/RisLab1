@@ -120,9 +120,7 @@ public class TestMain {
                 databaseController.createDatabase();
                 var countingDao = new CountingNodeDao(testSubject.dao);
                 var stat = countStat(inputPath, countingDao, length);
-//                var startTime = System.currentTimeMillis();
                 countingDao.commit();
-//                var time = System.currentTimeMillis() - startTime + countingDao.getTimeMillis();
                 var time = countingDao.getTimeMillis();
                 String result = String.format(
                         "\nStrategy: %s\nMilliseconds: %d\nWrites per second: %f\n",
@@ -130,7 +128,6 @@ public class TestMain {
                 );
                 System.out.println(separator);
                 System.out.println(result);
-//                logger.info(stat);
             }
             System.out.println(separator);
         } catch (Exception e) {

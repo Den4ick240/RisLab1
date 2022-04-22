@@ -16,5 +16,6 @@ public class BatchTagDao extends BatchDao<TagEntity> {
     public void insert(TagEntity obj) throws SQLException {
         var sqlStatement = TagSqlString.format(obj);
         batch.addBatch(sqlStatement);
+        super.insert(obj);
     }
 }
