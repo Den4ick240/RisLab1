@@ -116,6 +116,7 @@ public class TestMain {
             System.out.println(separator);
         } catch (Exception e) {
             e.printStackTrace();
+            System.out.println(e.getLocalizedMessage());
         }
     }
 
