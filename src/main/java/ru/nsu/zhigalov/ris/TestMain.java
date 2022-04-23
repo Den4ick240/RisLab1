@@ -11,10 +11,12 @@ import ru.nsu.zhigalov.ris.db.*;
 
 import javax.xml.bind.JAXBException;
 import javax.xml.stream.XMLStreamException;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Map;
 
 public class TestMain {
     public static final Logger logger = LogManager.getLogger(TestMain.class);

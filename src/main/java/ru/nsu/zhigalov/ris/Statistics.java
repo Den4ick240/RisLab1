@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 public class Statistics {
     private Map<String, Set<String>> userEditsMap;
-    private Map<String, Integer> userNodesMap;
+    private final Map<String, Integer> userNodesMap;
     private Map<String, Integer> keyNodeAmountMap;
 
     public void addUserEdit(String username, String changeset) {
@@ -57,6 +57,7 @@ public class Statistics {
                 .collect(Collectors.joining("\n"));
     }
 
+    @SuppressWarnings("ConstantConditions")
     private static String formatStringIntMap(Map<String, Integer> map, String formatString) {
         return map
                 .entrySet()

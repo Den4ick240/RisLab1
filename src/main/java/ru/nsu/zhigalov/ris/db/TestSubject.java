@@ -2,8 +2,6 @@ package ru.nsu.zhigalov.ris.db;
 
 import generated.Node;
 
-import java.util.function.Function;
-
 public class TestSubject {
     public final String name;
     public final Dao<Node> dao;
