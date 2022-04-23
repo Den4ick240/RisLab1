@@ -33,6 +33,13 @@ class NodeController {
         return result.getContent();
     }
 
+    @GetMapping("{id}")
+    public Object getNodeById(@PathVariable("id") Long id) {
+        var res = nodeService.findNodeById(id);
+        if (res.isPresent()) return res.get();
+        return "No such id";
+    }
+
     @GetMapping("count")
     public long getNodeCount() {
         return nodeService.getNodeCount();
@@ -41,5 +48,10 @@ class NodeController {
     @DeleteMapping("{id}")
     public void deleteNode(@PathVariable("id") Long id) {
         nodeService.deleteNodeById(id);
+    }
+
+    @PutMapping
+    public void putNode(@RequestBody Node node) {
+        nodeService.putNode(node);
     }
 }

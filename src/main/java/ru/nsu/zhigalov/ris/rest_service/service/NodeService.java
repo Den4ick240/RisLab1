@@ -6,10 +6,11 @@ import ru.nsu.zhigalov.ris.rest_service.dto.Area;
 import ru.nsu.zhigalov.ris.rest_service.entity.Node;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface NodeService {
     List<Node> findNodesInArea(Area area);
-    Node findNodeById(Long id);
+    Optional<Node> findNodeById(Long id);
     void deleteNodeById(Long id);
     void putNode(Node node);
     Page<Node> findAll(Pageable pageRequest);

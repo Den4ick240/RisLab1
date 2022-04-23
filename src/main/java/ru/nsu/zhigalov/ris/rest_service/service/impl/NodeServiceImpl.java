@@ -9,6 +9,7 @@ import ru.nsu.zhigalov.ris.rest_service.repository.NodeRepository;
 import ru.nsu.zhigalov.ris.rest_service.service.NodeService;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class NodeServiceImpl implements NodeService {
@@ -24,8 +25,8 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
-    public Node findNodeById(Long id) {
-        return null;
+    public Optional<Node> findNodeById(Long id) {
+        return nodeRepository.findById(id);
     }
 
     @Override
@@ -35,7 +36,7 @@ public class NodeServiceImpl implements NodeService {
 
     @Override
     public void putNode(Node node) {
-
+        nodeRepository.save(node);
     }
 
     @Override
