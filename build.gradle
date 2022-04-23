@@ -9,7 +9,7 @@ group 'ru.nsu.zhigalov.ris'
 version '1.0-SNAPSHOT'
 
 application {
-    mainClassName = "ru.nsu.zhigalov.ris.Application"
+    mainClassName = "ru.nsu.zhigalov.ris.rest_service.Application"
 }
 
 ext {

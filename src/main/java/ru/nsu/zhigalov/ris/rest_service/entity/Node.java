@@ -44,6 +44,6 @@ public class Node {
     @Column
     private Date timestamp;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "nodeId", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private List<Tag> tags;
 }

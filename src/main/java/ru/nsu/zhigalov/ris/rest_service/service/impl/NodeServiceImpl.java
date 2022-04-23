@@ -1,5 +1,7 @@
 package ru.nsu.zhigalov.ris.rest_service.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.nsu.zhigalov.ris.rest_service.dto.Area;
 import ru.nsu.zhigalov.ris.rest_service.entity.Node;
@@ -22,11 +24,6 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
-    public List<Node> getAllNodes() {
-        return null;
-    }
-
-    @Override
     public Node findNodeById(Long id) {
         return null;
     }
@@ -40,4 +37,15 @@ public class NodeServiceImpl implements NodeService {
     public void putNode(Node node) {
 
     }
+
+    @Override
+    public Page<Node> findAll(Pageable pageRequest) {
+        return nodeRepository.findAll(pageRequest);
+    }
+
+    @Override
+    public long getNodeCount() {
+        return nodeRepository.count();
+    }
+
 }
