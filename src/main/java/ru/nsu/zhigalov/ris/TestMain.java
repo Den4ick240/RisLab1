@@ -23,7 +23,7 @@ public class TestMain {
     static final String STAT_OPTION = "s";
     static final String LENGTH_OPTION = "l";
     static final String[] SCRIPT_NAMES = {"nodes", "tags", "extensions"};
-    static final int batchSize = 1000;
+    static final int batchSize = 10000;
 
 
     public static void main(String[] args) {
