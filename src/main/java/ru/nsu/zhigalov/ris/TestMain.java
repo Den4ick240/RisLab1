@@ -23,7 +23,7 @@ public class TestMain {
     static final String STAT_OPTION = "s";
     static final String LENGTH_OPTION = "l";
     static final String[] SCRIPT_NAMES = {"nodes", "tags", "extensions"};
-    static final int batchSize = 50000;
+    static final int batchSize = 100000;
 
 
     public static void main(String[] args) {
@@ -84,29 +84,11 @@ public class TestMain {
         try (var databaseController = new DatabaseController(SCRIPT_NAMES)) {
             Connection connection = databaseController.getConnection();
 
-            var batch = connection.createStatement();
-            Runnable executeBatch = () -> {
-                try {
-                    batch.executeBatch();
-                    connection.commit();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            };
-            Runnable commit = () -> {
-                try {
-                    connection.commit();
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-            };
+            var batch = new Batch(connection.createStatement(), batchSize);
 
             Dao<Node> stringNodeDao = new NestedNodeDao(new StringNodeDao(connection), new StringTagDao(connection));
-//                    new StringNodeDao(connection, new StringTagDao(connection), commit);
             Dao<Node> preparedNodeDao = new NestedNodeDao(new PreparedNodeDao(connection), new PreparedTagDao(connection));
-//                    new PreparedNodeDao(connection, new PreparedTagDao(connection), commit);
-            Dao<Node> batchNodeDao = new NestedNodeDao(new BatchNodeDao(connection, batchSize, batch), new BatchTagDao(connection, batchSize, batch));
-//                    new BatchNodeDao(batch, new BatchTagDao(batch));
+            Dao<Node> batchNodeDao =  new NestedNodeDao(new BatchNodeDao(connection ,batch), new BatchTagDao(connection, batch));
 
             TestSubject[] testSubjects = new TestSubject[]{
                     new TestSubject("New statement every time", stringNodeDao),

@@ -15,9 +15,9 @@ public class PreparedTagDao extends CommittingDao<TagEntity> {
 
     @Override
     public void insert(TagEntity tagEntity) throws SQLException {
-        preparedStatement.setInt(1, tagEntity.nodeId.intValue());
-        preparedStatement.setString(2, tagEntity.k);
-        preparedStatement.setString(3, tagEntity.v);
+        preparedStatement.setInt(1, tagEntity.getNodeId().intValue());
+        preparedStatement.setString(2, tagEntity.getK());
+        preparedStatement.setString(3, tagEntity.getV());
         preparedStatement.execute();
     }
 }

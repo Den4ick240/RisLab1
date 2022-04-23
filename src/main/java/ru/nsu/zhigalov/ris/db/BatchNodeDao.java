@@ -6,11 +6,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class BatchNodeDao extends BatchDao<Node> {
-    private final Statement batch;
+public class BatchNodeDao extends CommittingDao<Node> {
+    private final Batch batch;
 
-    public BatchNodeDao(Connection connection, int batchSize, Statement batch) {
-        super(connection, batch, batchSize);
+    public BatchNodeDao(Connection connection, Batch batch) {
+        super(connection);
         this.batch = batch;
     }
 
@@ -18,6 +18,11 @@ public class BatchNodeDao extends BatchDao<Node> {
     public void insert(Node node) throws SQLException {
         var sqlStatement = NodeSqlString.format(node);
         batch.addBatch(sqlStatement);
-        super.insert(node);
+    }
+
+    @Override
+    public void commit() throws SQLException {
+        batch.executeBatch();
+        super.commit();
     }
 }

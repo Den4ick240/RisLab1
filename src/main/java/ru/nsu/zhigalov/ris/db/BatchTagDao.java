@@ -2,13 +2,12 @@ package ru.nsu.zhigalov.ris.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.sql.Statement;
 
-public class BatchTagDao extends BatchDao<TagEntity> {
-    private final Statement batch;
+public class BatchTagDao extends CommittingDao<TagEntity> {
+    private final Batch batch;
 
-    public BatchTagDao(Connection connection, int batchSize, Statement batch) {
-        super(connection, batch, batchSize);
+    public BatchTagDao(Connection connection, Batch batch) {
+        super(connection);
         this.batch = batch;
     }
 
@@ -16,6 +15,11 @@ public class BatchTagDao extends BatchDao<TagEntity> {
     public void insert(TagEntity obj) throws SQLException {
         var sqlStatement = TagSqlString.format(obj);
         batch.addBatch(sqlStatement);
-        super.insert(obj);
+    }
+
+    @Override
+    public void commit() throws SQLException {
+        batch.executeBatch();
+        super.commit();
     }
 }
