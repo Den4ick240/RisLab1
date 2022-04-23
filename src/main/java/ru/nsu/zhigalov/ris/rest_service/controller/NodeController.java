@@ -37,4 +37,9 @@ class NodeController {
     public long getNodeCount() {
         return nodeService.getNodeCount();
     }
+
+    @DeleteMapping("{id}")
+    public void deleteNode(@PathVariable("id") Long id) {
+        nodeService.deleteNodeById(id);
+    }
 }
