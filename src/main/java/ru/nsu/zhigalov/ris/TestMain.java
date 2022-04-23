@@ -23,7 +23,7 @@ public class TestMain {
     static final String STAT_OPTION = "s";
     static final String LENGTH_OPTION = "l";
     static final String[] SCRIPT_NAMES = {"nodes", "tags", "extensions"};
-    static final int batchSize = 100000;
+    static final int batchSize = 1000;
 
 
     public static void main(String[] args) {
@@ -89,11 +89,13 @@ public class TestMain {
             Dao<Node> stringNodeDao = new NestedNodeDao(new StringNodeDao(connection), new StringTagDao(connection));
             Dao<Node> preparedNodeDao = new NestedNodeDao(new PreparedNodeDao(connection), new PreparedTagDao(connection));
             Dao<Node> batchNodeDao =  new NestedNodeDao(new BatchNodeDao(connection ,batch), new BatchTagDao(connection, batch));
+            Dao<Node> preparedBatchNodeDao = new PreparedNestedBatchNodeDao(connection, batchSize);
 
             TestSubject[] testSubjects = new TestSubject[]{
                     new TestSubject("New statement every time", stringNodeDao),
                     new TestSubject("Prepared statement", preparedNodeDao),
-                    new TestSubject("Batch statement", batchNodeDao)
+                    new TestSubject("Batch statement", batchNodeDao),
+                    new TestSubject("Prepared batch statement", preparedBatchNodeDao)
             };
 
             String separator = "--------------------------------";
