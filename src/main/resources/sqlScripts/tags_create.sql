@@ -1,4 +1,4 @@
-create table tags(
+create table if not exists tags(
     node_id serial not null references nodes (id),
     k varchar(255),
     v varchar(255),

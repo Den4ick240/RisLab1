@@ -1,4 +1,4 @@
-create table nodes
+create table if not exists nodes
 (
     id        serial not null primary key,
     lat       double precision,
