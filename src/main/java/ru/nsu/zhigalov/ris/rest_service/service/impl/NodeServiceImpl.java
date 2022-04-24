@@ -8,10 +8,12 @@ import ru.nsu.zhigalov.ris.rest_service.entity.Node;
 import ru.nsu.zhigalov.ris.rest_service.repository.NodeRepository;
 import ru.nsu.zhigalov.ris.rest_service.service.NodeService;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class NodeServiceImpl implements NodeService {
     private final NodeRepository nodeRepository;
 

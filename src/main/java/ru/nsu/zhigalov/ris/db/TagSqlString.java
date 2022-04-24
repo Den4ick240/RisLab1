@@ -14,7 +14,7 @@ public class TagSqlString {
         );
     }
     public static void prepare(TagEntity tagEntity, PreparedStatement preparedStatement) throws SQLException {
-        preparedStatement.setInt(1, tagEntity.getNodeId().intValue());
+        preparedStatement.setLong(1, tagEntity.getNodeId().longValue());
         preparedStatement.setString(2, tagEntity.getK());
         preparedStatement.setString(3, tagEntity.getV());
     }

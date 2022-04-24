@@ -17,8 +17,8 @@ import java.io.Serializable;
 public class Tag implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(nullable = false, updatable = false)
-    private Integer nodeId;
+    @Column(nullable = false)
+    private Long nodeId;
 
     @Id
     @Column

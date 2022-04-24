@@ -1,6 +1,6 @@
 create table if not exists nodes
 (
-    id        serial not null primary key,
+    id        bigint not null primary key,
     lat       double precision,
     lon       double precision,
     usr       varchar(255),

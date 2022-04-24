@@ -28,7 +28,7 @@ public class NodeSqlString {
     }
 
     public static void prepare(Node node, PreparedStatement preparedStatement) throws SQLException {
-        preparedStatement.setInt(1, node.getId().intValue());
+        preparedStatement.setLong(1, node.getId().longValue());
         preparedStatement.setDouble(2, node.getLat());
         preparedStatement.setDouble(3, node.getLon());
         preparedStatement.setString(4, node.getUser());

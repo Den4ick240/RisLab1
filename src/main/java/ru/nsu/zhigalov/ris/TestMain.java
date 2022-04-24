@@ -94,10 +94,10 @@ public class TestMain {
             Dao<Node> preparedBatchNodeDao = new PreparedNestedBatchNodeDao(connection, batchSize);
 
             TestSubject[] testSubjects = new TestSubject[]{
-                    new TestSubject("New statement every time", stringNodeDao),
-                    new TestSubject("Prepared statement", preparedNodeDao),
+//                    new TestSubject("New statement every time", stringNodeDao),
+//                    new TestSubject("Prepared statement", preparedNodeDao),
                     new TestSubject("Batch statement", batchNodeDao),
-                    new TestSubject("Prepared batch statement", preparedBatchNodeDao)
+//                    new TestSubject("Prepared batch statement", preparedBatchNodeDao)
             };
 
             String separator = "--------------------------------";

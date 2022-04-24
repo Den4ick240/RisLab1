@@ -1,5 +1,6 @@
 package ru.nsu.zhigalov.ris.rest_service.controller;
 
+import com.sun.istack.NotNull;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
@@ -18,8 +19,13 @@ class NodeController {
         this.nodeService = nodeService;
     }
 
+    @GetMapping("in_area_body")
+    public List<Node> getNodesInArea(@NotNull @RequestBody Area area) {
+        return nodeService.findNodesInArea(area);
+    }
+
     @GetMapping("in_area")
-    public List<Node> getNodesInArea(@RequestBody Area area) {
+    public List<Node> getInAreaParams(Area area ) {
         return nodeService.findNodesInArea(area);
     }
 
@@ -51,7 +57,8 @@ class NodeController {
     }
 
     @PutMapping
-    public void putNode(@RequestBody Node node) {
+    public void putNode(@NotNull @RequestBody Node node) {
         nodeService.putNode(node);
     }
+
 }
