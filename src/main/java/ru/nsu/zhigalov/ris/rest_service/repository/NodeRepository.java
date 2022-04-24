@@ -12,7 +12,7 @@ import java.util.List;
 public interface NodeRepository extends JpaRepository<Node, Long> {
     @Query(
             value = "SELECT * FROM nodes " +
-                    "WHERE earth_box(ll_to_earth(:lat, :lon), :rad) @> ll_to_earth(lat, lon) and " +
+                    "WHERE earth_box(ll_to_earth(:lat, :lon), :rad) @> ll_to_earth(nodes.lat, nodes.lon) and " +
                     "earth_distance(ll_to_earth(:lat, :lon), ll_to_earth(nodes.lat, nodes.lon)) < :rad " +
                     "ORDER BY earth_distance(ll_to_earth(:lat, :lon), ll_to_earth(nodes.lat, nodes.lon)) ASC",
             nativeQuery = true

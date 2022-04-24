@@ -5,7 +5,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 import ru.nsu.zhigalov.ris.rest_service.dto.Area;
-import ru.nsu.zhigalov.ris.rest_service.entity.Node;
+import ru.nsu.zhigalov.ris.rest_service.dto.NodeDTO;
 import ru.nsu.zhigalov.ris.rest_service.service.NodeService;
 
 import java.util.List;
@@ -20,23 +20,22 @@ class NodeController {
     }
 
     @GetMapping("in_area_body")
-    public List<Node> getNodesInArea(@NotNull @RequestBody Area area) {
+    public List<NodeDTO> getNodesInArea(@NotNull @RequestBody Area area) {
         return nodeService.findNodesInArea(area);
     }
 
     @GetMapping("in_area")
-    public List<Node> getInAreaParams(Area area ) {
+    public List<NodeDTO> getInAreaParams(Area area ) {
         return nodeService.findNodesInArea(area);
     }
 
     @GetMapping
-    public List<Node> getNodes(
+    public List<NodeDTO> getNodes(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "3") int size
     ) {
         Pageable pageRequest = PageRequest.of(page, size);
-        var result = nodeService.findAll(pageRequest);
-        return result.getContent();
+        return nodeService.findAll(pageRequest);
     }
 
     @GetMapping("{id}")
@@ -57,8 +56,8 @@ class NodeController {
     }
 
     @PutMapping
-    public void putNode(@NotNull @RequestBody Node node) {
-        nodeService.putNode(node);
+    public NodeDTO putNode(@NotNull @RequestBody NodeDTO nodeDTO) {
+        return nodeService.putNode(nodeDTO);
     }
 
 }

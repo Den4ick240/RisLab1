@@ -1,10 +1,12 @@
 package ru.nsu.zhigalov.ris.rest_service.service.impl;
 
-import org.springframework.data.domain.Page;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.nsu.zhigalov.ris.rest_service.dto.Area;
+import ru.nsu.zhigalov.ris.rest_service.dto.NodeDTO;
 import ru.nsu.zhigalov.ris.rest_service.entity.Node;
+import ru.nsu.zhigalov.ris.rest_service.mapper.NodeMapper;
 import ru.nsu.zhigalov.ris.rest_service.repository.NodeRepository;
 import ru.nsu.zhigalov.ris.rest_service.service.NodeService;
 
@@ -14,21 +16,20 @@ import java.util.Optional;
 
 @Service
 @Transactional
+@RequiredArgsConstructor
 public class NodeServiceImpl implements NodeService {
     private final NodeRepository nodeRepository;
+    private final NodeMapper nodeMapper;
 
-    public NodeServiceImpl(NodeRepository nodeRepository) {
-        this.nodeRepository = nodeRepository;
+    @Override
+    public List<NodeDTO> findNodesInArea(Area area) {
+        return nodeMapper.entitiesToDtos(
+                nodeRepository.findNodesInRangeOrderByDistanceAsc(area.getLat(), area.getLon(), area.getRad()));
     }
 
     @Override
-    public List<Node> findNodesInArea(Area area) {
-        return nodeRepository.findNodesInRangeOrderByDistanceAsc(area.getLat(), area.getLon(), area.getRad());
-    }
-
-    @Override
-    public Optional<Node> findNodeById(Long id) {
-        return nodeRepository.findById(id);
+    public Optional<NodeDTO> findNodeById(Long id) {
+        return nodeRepository.findById(id).map(nodeMapper::entityToDto);
     }
 
     @Override
@@ -37,13 +38,15 @@ public class NodeServiceImpl implements NodeService {
     }
 
     @Override
-    public void putNode(Node node) {
-        nodeRepository.save(node);
+    public NodeDTO putNode(NodeDTO nodeDTO) {
+        Node node = nodeMapper.dtoToEntity(nodeDTO);
+        System.out.println(node);
+        return nodeMapper.entityToDto(nodeRepository.save(node));
     }
 
     @Override
-    public Page<Node> findAll(Pageable pageRequest) {
-        return nodeRepository.findAll(pageRequest);
+    public List<NodeDTO> findAll(Pageable pageRequest) {
+        return nodeMapper.entitiesToDtos(nodeRepository.findAll(pageRequest).getContent());
     }
 
     @Override
