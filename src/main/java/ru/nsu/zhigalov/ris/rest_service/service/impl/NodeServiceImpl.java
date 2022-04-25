@@ -5,20 +5,28 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.nsu.zhigalov.ris.rest_service.dto.Area;
 import ru.nsu.zhigalov.ris.rest_service.dto.NodeDTO;
+import ru.nsu.zhigalov.ris.rest_service.dto.TagDTO;
 import ru.nsu.zhigalov.ris.rest_service.entity.Node;
+import ru.nsu.zhigalov.ris.rest_service.entity.Tag;
+import ru.nsu.zhigalov.ris.rest_service.entity.TagId;
 import ru.nsu.zhigalov.ris.rest_service.mapper.NodeMapper;
 import ru.nsu.zhigalov.ris.rest_service.repository.NodeRepository;
+import ru.nsu.zhigalov.ris.rest_service.repository.TagRepository;
 import ru.nsu.zhigalov.ris.rest_service.service.NodeService;
 
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class NodeServiceImpl implements NodeService {
     private final NodeRepository nodeRepository;
+    private final TagRepository tagRepository;
     private final NodeMapper nodeMapper;
 
     @Override
@@ -40,8 +48,12 @@ public class NodeServiceImpl implements NodeService {
     @Override
     public NodeDTO putNode(NodeDTO nodeDTO) {
         Node node = nodeMapper.dtoToEntity(nodeDTO);
-        System.out.println(node);
-        return nodeMapper.entityToDto(nodeRepository.save(node));
+        Node result = nodeRepository.save(node);
+
+        var ks = nodeDTO.getTags().stream().map(TagDTO::getKey).collect(Collectors.toList());
+        tagRepository.deleteByNodeIdAndKNotIn(result.getId(), ks);
+
+        return nodeMapper.entityToDto(result);
     }
 
     @Override
