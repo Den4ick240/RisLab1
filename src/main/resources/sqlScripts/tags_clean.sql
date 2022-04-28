@@ -1,1 +1,1 @@
-DROP TABLE IF EXISTS tags
+drop TABLE if exists tags;

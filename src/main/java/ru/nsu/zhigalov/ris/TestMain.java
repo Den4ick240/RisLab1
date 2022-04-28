@@ -94,10 +94,10 @@ public class TestMain {
             Dao<Node> preparedBatchNodeDao = new PreparedNestedBatchNodeDao(connection, batchSize);
 
             TestSubject[] testSubjects = new TestSubject[]{
-//                    new TestSubject("New statement every time", stringNodeDao),
-//                    new TestSubject("Prepared statement", preparedNodeDao),
-                    new TestSubject("Batch statement", batchNodeDao),
-//                    new TestSubject("Prepared batch statement", preparedBatchNodeDao)
+                    new TestSubject("New statement every time", stringNodeDao),
+                    new TestSubject("Prepared statement", preparedNodeDao),
+//                    new TestSubject("Batch statement", batchNodeDao),
+                    new TestSubject("Prepared batch statement", preparedBatchNodeDao)
             };
 
             String separator = "--------------------------------";
@@ -109,11 +109,11 @@ public class TestMain {
                 countingDao.commit();
                 var time = countingDao.getTimeMillis();
                 String result = String.format(
-                        "\nStrategy: %s\nMilliseconds: %d\nWrites per second: %f\n",
-                        testSubject.name, time, countingDao.getCounter() / (((float) time) / 1000)
+                        "\nStrategy: %s\nMilliseconds: %d\nWrites per second: %f\n, Inserts: %d",
+                        testSubject.name, time, countingDao.getCounter() / (((float) time) / 1000), countingDao.getCounter()
                 );
                 System.out.println(separator);
-                System.out.println(result);
+                logger.info(result);
             }
             System.out.println(separator);
         } catch (Exception e) {
